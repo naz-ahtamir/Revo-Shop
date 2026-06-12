@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+:root {
+  --orange: #8141E6;
+  --orange-dark: #6a2fbf;
+  --orange-light: #9d5fef;
+  --orange-pale: #f3ebff;
+  --black: #111111;
+  --white: #ffffff;
+  --gray-200: #e5e5e5;
+  --gray-100: #f5f5f5;
+  --gray-50: #fafafa;
+  --gray-500: #888888;
+  --gray-700: #444444;
+  --nav-h: 64px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+@theme inline {
+  --color-orange: var(--orange);
+  --color-orange-dark: var(--orange-dark);
+  --color-orange-pale: var(--orange-pale);
+  --color-foreground: var(--black);
+  --color-background: var(--white);
+  --font-display: var(--font-montserrat);
+  --font-body: var(--font-montserrat);
+  --font-ui: var(--font-montserrat);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-montserrat), sans-serif;
+  color: var(--black);
+  background: var(--white);
+  line-height: 1.6;
+}
+
+@layer utilities {
+  .container-page {
+    @apply mx-auto max-w-7xl px-6;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-lg border-2 border-transparent px-6 py-3 text-sm font-semibold transition-all;
+    font-family: var(--font-montserrat), sans-serif;
+  }
+  .btn-primary {
+    @apply border-[var(--orange)] bg-[var(--orange)] text-white hover:border-[var(--orange-dark)] hover:bg-[var(--orange-dark)];
+  }
+  .btn-secondary {
+    @apply border-[var(--black)] bg-transparent text-[var(--black)] hover:bg-[var(--black)] hover:text-white;
+  }
+  .btn-outline {
+    @apply border-[var(--orange)] bg-transparent text-[var(--orange)] hover:bg-[var(--orange)] hover:text-white;
+  }
+  .btn-sm {
+    @apply px-4 py-2 text-xs;
+  }
+  .btn-lg {
+    @apply px-8 py-4 text-base;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    font-family: var(--font-montserrat), sans-serif;
+  }
+  .badge-orange {
+    @apply bg-[var(--orange-pale)] text-[var(--orange-dark)];
+  }
+  .badge-green {
+    @apply bg-[#e8f5e8] text-[#2d7d2d];
+  }
+  .badge-red {
+    @apply bg-[#fee] text-[#c00];
+  }
+  .badge-gray {
+    @apply bg-[var(--gray-100)] text-[var(--gray-700)];
+  }
+  .display-md {
+    font-family: var(--font-montserrat), sans-serif;
+    @apply text-3xl font-bold uppercase leading-tight md:text-4xl;
+  }
+  .subheading {
+    @apply text-xs font-semibold uppercase tracking-widest text-[var(--orange)];
+    font-family: var(--font-montserrat), sans-serif;
+  }
+}
+
+/* Toast positioning - avoid navbar overlap */
+[data-sonner-toaster] {
+  top: 80px !important; /* 64px navbar + 16px margin */
+}
+
+[data-sonner-toast] {
+  border-radius: 12px !important;
+  font-family: var(--font-montserrat), sans-serif !important;
+}
+
+@layer utilities {
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+}

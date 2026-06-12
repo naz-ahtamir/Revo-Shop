@@ -1,0 +1,47 @@
+[
+  {
+    "id": "ORD-2025-001",
+    "customer": "PT Semen Indonesia",
+    "product": "3M Safety Helmet H-700",
+    "qty": 50,
+    "total": 9250000,
+    "status": "Delivered",
+    "date": "2025-06-01"
+  },
+  {
+    "id": "ORD-2025-002",
+    "customer": "Waskita Karya",
+    "product": "King's KWD206X Safety Shoes",
+    "qty": 30,
+    "total": 12750000,
+    "status": "Processing",
+    "date": "2025-06-02"
+  },
+  {
+    "id": "ORD-2025-003",
+    "customer": "PT Vale Indonesia",
+    "product": "Petzl VOLT Full Body Harness",
+    "qty": 15,
+    "total": 10275000,
+    "status": "Shipped",
+    "date": "2025-06-02"
+  },
+  {
+    "id": "ORD-2025-004",
+    "customer": "Pertamina EP",
+    "product": "DuPont Nomex FR Coverall",
+    "qty": 100,
+    "total": 125000000,
+    "status": "Processing",
+    "date": "2025-06-03"
+  },
+  {
+    "id": "ORD-2025-005",
+    "customer": "PT Freeport Indonesia",
+    "product": "3M 6200 Half Face Respirator",
+    "qty": 200,
+    "total": 57000000,
+    "status": "Pending",
+    "date": "2025-06-03"
+  }
+]

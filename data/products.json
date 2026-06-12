@@ -1,0 +1,362 @@
+[
+  {
+    "id": 1,
+    "slug": "helm-safety-proyek-3m",
+    "name": "3M Safety Helmet H-700",
+    "category": "Safety Helmet",
+    "description": "Industrial hard hat designed for construction and heavy industry. Six-point suspension system for superior comfort and protection. Meets ANSI Z89.1 and SNI standards.",
+    "specs": {
+      "Standard": "ANSI Z89.1 / SNI",
+      "Type": "Type I Class E",
+      "Color": "Yellow / White / Orange",
+      "Material": "HDPE",
+      "Weight": "310g",
+      "Suspension": "6-point ratchet"
+    },
+    "features": [
+      "Impact resistant HDPE shell",
+      "UV stabilized material",
+      "6-point ratchet suspension",
+      "Sweatband included",
+      "Slots for accessories"
+    ],
+    "price": 185000,
+    "originalPrice": 220000,
+    "stock": 247,
+    "rating": 4.8,
+    "reviews": 312,
+    "imageUrl": "/images/products/3MSafetyHelmet.svg",
+    "featured": true,
+    "badge": "Best Seller"
+  },
+  {
+    "id": 2,
+    "slug": "sepatu-safety-kings-kwd206",
+    "name": "King's KWD206X Safety Shoes",
+    "category": "Safety Shoes",
+    "description": "Low ankle safety shoes with steel toe cap. Anti-static, oil resistant outsole. Suitable for manufacturing, logistics, and warehouse environments.",
+    "specs": {
+      "Standard": "EN ISO 20345 S3",
+      "ToeProtection": "200J Steel Toecap",
+      "Sole": "Nitrile rubber",
+      "Upper": "Full grain leather",
+      "Rating": "S3 SRC",
+      "Size": "38-47"
+    },
+    "features": [
+      "200 joule steel toe cap",
+      "Anti-static properties",
+      "Oil & slip resistant",
+      "Puncture resistant midsole",
+      "Comfortable lining"
+    ],
+    "price": 425000,
+    "originalPrice": 520000,
+    "stock": 183,
+    "rating": 4.7,
+    "reviews": 256,
+    "imageUrl": "/images/products/KingsKWDShoes.svg",
+    "featured": true,
+    "badge": "Top Rated"
+  },
+  {
+    "id": 3,
+    "slug": "sarung-tangan-kulit-safety",
+    "name": "Ansell Activarmr Gloves 97-007",
+    "category": "Safety Gloves",
+    "description": "Heavy duty leather work gloves for cut and abrasion protection. Ergonomic design for comfortable extended wear in industrial settings.",
+    "specs": {
+      "Standard": "EN388 Level 4342",
+      "Material": "Split leather",
+      "Cuff": "Knit wrist",
+      "Size": "S/M/L/XL",
+      "Dexterity": "Level 2",
+      "Application": "General industrial"
+    },
+    "features": [
+      "Cut level 4 protection",
+      "Oil resistant leather",
+      "Reinforced thumb area",
+      "Knit wrist for secure fit",
+      "CE Category II"
+    ],
+    "price": 95000,
+    "originalPrice": 115000,
+    "stock": 512,
+    "rating": 4.6,
+    "reviews": 189,
+    "imageUrl": "/images/products/Ansell Activarmr Gloves 97-007.svg",
+    "featured": true,
+    "badge": "Popular"
+  },
+  {
+    "id": 4,
+    "slug": "rompi-reflektif-ansi-107",
+    "name": "Radians RVZ4 Reflective Vest",
+    "category": "Reflective Vest",
+    "description": "High visibility safety vest Class 2 compliant. Mesh construction for breathability in hot environments. Ideal for road work, traffic control, and construction.",
+    "specs": {
+      "Standard": "ANSI/ISEA 107 Class 2",
+      "Visibility": "Class 2",
+      "Material": "Polyester mesh",
+      "Tape": "3M Scotchlite 3355",
+      "Color": "Lime Green",
+      "Closure": "Front zipper"
+    },
+    "features": [
+      "ANSI Class 2 compliant",
+      "3M Scotchlite tape",
+      "Multiple pockets",
+      "Zipper front closure",
+      "Washable"
+    ],
+    "price": 125000,
+    "originalPrice": 145000,
+    "stock": 389,
+    "rating": 4.5,
+    "reviews": 143,
+    "imageUrl": "/images/products/Radians RVZ4 Reflective Vest.svg",
+    "featured": false,
+    "badge": null
+  },
+  {
+    "id": 5,
+    "slug": "kacamata-safety-uvex-9301",
+    "name": "Uvex 9301.105 Safety Goggles",
+    "category": "Safety Goggles",
+    "description": "Anti-fog safety goggles with indirect ventilation. Chemical splash resistant. Suitable for labs, chemical plants, and construction sites.",
+    "specs": {
+      "Standard": "EN166/EN170",
+      "Lens": "Polycarbonate anti-fog",
+      "UV": "UV400",
+      "Ventilation": "Indirect",
+      "Frame": "Soft PVC",
+      "Weight": "62g"
+    },
+    "features": [
+      "Anti-fog coating",
+      "UV400 protection",
+      "Indirect ventilation",
+      "Fits over prescription glasses",
+      "Chemical splash resistant"
+    ],
+    "price": 145000,
+    "originalPrice": 175000,
+    "stock": 267,
+    "rating": 4.7,
+    "reviews": 201,
+    "imageUrl": "/images/products/Uvex 9301.105 Safety Goggles.svg",
+    "featured": true,
+    "badge": "Certified"
+  },
+  {
+    "id": 6,
+    "slug": "masker-respirator-3m-6200",
+    "name": "3M 6200 Half Face Respirator",
+    "category": "Respirator",
+    "description": "Reusable half-face respirator for protection against organic vapors, gases, and particulates. Compatible with 3M 6000 series cartridges.",
+    "specs": {
+      "Standard": "NIOSH / SNI",
+      "Type": "Half face reusable",
+      "Cartridge": "6000 series compatible",
+      "Size": "S/M/L",
+      "FaceType": "Half",
+      "Material": "Silicone"
+    },
+    "features": [
+      "Cool Flow valve reduces heat",
+      "Easy cartridge change",
+      "Comfortable silicone face seal",
+      "Compatible with multiple cartridges",
+      "Reusable & economical"
+    ],
+    "price": 285000,
+    "originalPrice": 340000,
+    "stock": 198,
+    "rating": 4.9,
+    "reviews": 445,
+    "imageUrl": "/images/products/3M 6200 Half Face Respirator.svg",
+    "featured": true,
+    "badge": "Premium"
+  },
+  {
+    "id": 7,
+    "slug": "pelindung-telinga-3m-1100",
+    "name": "3M 1100 Foam Ear Plugs (Box/200)",
+    "category": "Ear Protection",
+    "description": "Disposable foam ear plugs with NRR 29dB. Soft, self-expanding foam for comfortable all-day wear. Ideal for high-noise manufacturing environments.",
+    "specs": {
+      "Standard": "ANSI S3.19",
+      "NRR": "29 dB",
+      "Material": "Polyurethane foam",
+      "Type": "Disposable cordless",
+      "Package": "200 pairs/box",
+      "Color": "Orange"
+    },
+    "features": [
+      "NRR 29dB protection",
+      "Self-expanding for easy fit",
+      "No cord to get in the way",
+      "All-day comfort",
+      "Cost-effective bulk pack"
+    ],
+    "price": 175000,
+    "originalPrice": 210000,
+    "stock": 624,
+    "rating": 4.6,
+    "reviews": 378,
+    "imageUrl": "/images/products/3M 1100 Foam Ear Plugs (Box200).svg",
+    "featured": false,
+    "badge": "Value Pack"
+  },
+  {
+    "id": 8,
+    "slug": "face-shield-sellstrom-s31010",
+    "name": "Sellstrom S31010 Face Shield",
+    "category": "Face Shield",
+    "description": "Full face protection against impact, splash, and flying debris. Adjustable headgear for universal fit. Meets ANSI Z87.1 standards.",
+    "specs": {
+      "Standard": "ANSI Z87.1",
+      "Lens": "4mm polycarbonate",
+      "Coverage": "Full face",
+      "Headgear": "Ratchet adjustment",
+      "Transmittance": "89%",
+      "Height": "203mm"
+    },
+    "features": [
+      "Full face coverage",
+      "Anti-scratch lens",
+      "Adjustable headgear",
+      "Compatible with hard hats",
+      "Chemical splash protection"
+    ],
+    "price": 210000,
+    "originalPrice": 255000,
+    "stock": 156,
+    "rating": 4.5,
+    "reviews": 112,
+    "imageUrl": "/images/products/Sellstrom S31010 Face Shield.svg",
+    "featured": false,
+    "badge": null
+  },
+  {
+    "id": 9,
+    "slug": "harness-full-body-petzl",
+    "name": "Petzl VOLT Full Body Harness",
+    "category": "Safety Harness",
+    "description": "Full body safety harness for work at height. Compatible with energy absorbers and lanyards. Ergonomic design for freedom of movement.",
+    "specs": {
+      "Standard": "EN361 / ANSI Z359",
+      "Capacity": "140 kg max",
+      "Material": "Polyester webbing",
+      "Attachment": "Dorsal + sternal",
+      "Size": "Universal",
+      "Certification": "CE Cat III"
+    },
+    "features": [
+      "Dorsal and sternal attachment",
+      "Ergonomic padding",
+      "Tool holder loops",
+      "Quick connect buckles",
+      "Meets EN 361 standard"
+    ],
+    "price": 685000,
+    "originalPrice": 820000,
+    "stock": 89,
+    "rating": 4.8,
+    "reviews": 167,
+    "imageUrl": "/images/products/Petzl VOLT Full Body Harness.svg",
+    "featured": true,
+    "badge": "Professional"
+  },
+  {
+    "id": 10,
+    "slug": "coverall-nomex-fr",
+    "name": "DuPont Nomex FR Coverall",
+    "category": "Coverall",
+    "description": "Flame resistant coverall for oil and gas, electrical, and chemical industries. Inherently FR fabric maintains protection wash after wash.",
+    "specs": {
+      "Standard": "EN ISO 11612",
+      "FR": "Inherent FR",
+      "Material": "Nomex IIIA",
+      "ARC": "8 cal/cm²",
+      "Color": "Navy blue",
+      "Certification": "CE Cat III"
+    },
+    "features": [
+      "Inherently flame resistant",
+      "ARC rated 8 cal/cm²",
+      "Antistatic properties",
+      "Multiple pockets",
+      "CE Category III"
+    ],
+    "price": 1250000,
+    "originalPrice": 1500000,
+    "stock": 67,
+    "rating": 4.9,
+    "reviews": 89,
+    "imageUrl": "/images/products/DuPont Nomex FR Coverall.svg",
+    "featured": false,
+    "badge": "Industrial"
+  },
+  {
+    "id": 11,
+    "slug": "safety-shoes-bata-industrials",
+    "name": "Bata Industrials Endura Boots",
+    "category": "Safety Shoes",
+    "description": "High ankle safety boots for mining, construction, and heavy industry. Waterproof upper with steel toe and midsole protection.",
+    "specs": {
+      "Standard": "EN ISO 20345 S3 HRO",
+      "ToeProtection": "200J Steel",
+      "Waterproof": "Yes",
+      "Height": "High ankle",
+      "Outsole": "Rubber HRO",
+      "Size": "39-48"
+    },
+    "features": [
+      "Waterproof full grain leather",
+      "Heat resistant outsole",
+      "Anti-static ESD",
+      "Penetration resistant midsole",
+      "Excellent ankle support"
+    ],
+    "price": 595000,
+    "originalPrice": 720000,
+    "stock": 134,
+    "rating": 4.7,
+    "reviews": 203,
+    "imageUrl": "/images/products/Bata Industrials Endura Boots.svg",
+    "featured": false,
+    "badge": null
+  },
+  {
+    "id": 12,
+    "slug": "helm-safety-msa-v-gard",
+    "name": "MSA V-Gard 500 Vented Helmet",
+    "category": "Safety Helmet",
+    "description": "Vented hard hat for hot working environments. Fas-Trac III suspension for all-day comfort. Available in multiple colors for site identification.",
+    "specs": {
+      "Standard": "ANSI Z89.1 / EN397",
+      "Type": "Type I Class C Vented",
+      "Material": "Polyethylene",
+      "Weight": "355g",
+      "Suspension": "Fas-Trac III",
+      "Color": "White/Yellow/Blue/Red"
+    },
+    "features": [
+      "Vented for airflow",
+      "Fas-Trac III ratchet",
+      "Comfortable foam sweatband",
+      "Accessory slots",
+      "Multiple color options"
+    ],
+    "price": 215000,
+    "originalPrice": 255000,
+    "stock": 312,
+    "rating": 4.6,
+    "reviews": 234,
+    "imageUrl": "/images/products/MSA V-Gard 500 Vented Helmet.svg",
+    "featured": false,
+    "badge": null
+  }
+]
