@@ -1,12 +1,10 @@
-import { Smartphone, ShoppingBag, Home, ShieldAlert, Glasses, Hand } from "lucide-react";
+import { Smartphone, ShoppingBag, Home, ShieldAlert, Glasses, Hand, Footprints } from "lucide-react";
 
 export const categories = [
   { name: "Electronics", Icon: Smartphone },
-  { name: "Fashion", Icon: ShoppingBag },
-  { name: "Home & Living", Icon: Home },
-  { name: "Sports & Outdoors", Icon: ShieldAlert },
-  { name: "Books & Media", Icon: Glasses },
-  { name: "Beauty & Health", Icon: Hand },
+  { name: "Clothes", Icon: ShoppingBag },  
+  { name: "Miscellaneous", Icon: Glasses },
+  { name: "Shoes", Icon: Footprints },
 ];
 
 export const testimonials = [

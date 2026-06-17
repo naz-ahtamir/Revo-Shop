@@ -2,8 +2,8 @@
   {
     "id": "1",
     "email": "admin@revoshop.co.id",
-    "passwordHash": "$2b$10$OVsPOPuJ7nFC96veFrapLeJWkzciY9beL6bT0./UfuHsjuEwcT.wG",
-    "name": "Admin RevoShop",
+    "passwordHash": "$2b$10$vrwm.cYJnYUklatG6R7GXOOZtQ2t5Dyu9uhTKVtaTHR72VJrn9brW",
+    "name": "Admin",
     "role": "ADMIN"
   },
   {
@@ -12,12 +12,5 @@
     "passwordHash": "$2b$10$V0wwP9soxcKjt4ere20YbewPZocOl/6hAG6LJpKt743ZQ/XvX2T3y",
     "name": "Demo User",
     "role": "USER"
-  },
-  {
-    "email": "naz@revoshop.co.id",
-    "passwordHash": "$2b$10$6DOBGsTTbhuN64WPcdss2ej9WQSpfIeFRcA0e7M96DFgBiaP4Kqma",
-    "name": "Nasaruddin",
-    "role": "USER",
-    "id": "3"
   }
 ]

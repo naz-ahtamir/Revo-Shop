@@ -25,7 +25,7 @@ A modern global e-commerce marketplace built with Next.js, featuring real-time p
 
 ## Live Demo
 
-Access the live application at: https://www.naz-ahtamir.site/
+Access the live application at: https://revo-shop.naz-ahtamir.site/
 
 ## Demo Credentials
 
@@ -185,16 +185,6 @@ This project fulfills the following assignment requirements:
 - ✅ **Cart System**: Implements localStorage for persistent cart state
 - ✅ **CRUD Operations**: Full product management with API routes
 - ✅ **Responsive Design**: Mobile-first approach with Tailwind CSS
-
-## License
-
-MIT License - Feel free to use this project for educational purposes.
-
-## Author
-
-**Naz Ahtamir**  
-- GitHub: [naz-ahtamir](https://github.com/naz-ahtamir)
-- Portfolio: https://www.naz-ahtamir.site/
 
 ## Acknowledgments
 

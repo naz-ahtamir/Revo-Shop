@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getOrders } from "@/lib/data";
 import { fmtUsd } from "@/lib/format";
 
@@ -38,7 +39,11 @@ export default function AdminOrdersPage() {
             <tbody>
               {orders.map((o) => (
                 <tr key={o.id} className="border-t border-[var(--gray-100)]">
-                  <td className="px-4 py-3 font-semibold text-[var(--orange)]">{o.id}</td>
+                  <td className="px-4 py-3 font-semibold text-[var(--orange)]">
+                    <Link href={`/admin/orders/${o.id}`} className="hover:underline">
+                      {o.id}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3 text-[var(--black)]">{o.customer}</td>
                   <td className="px-4 py-3 text-[var(--black)]">{o.product}</td>
                   <td className="px-4 py-3 text-[var(--black)]">{o.qty}</td>

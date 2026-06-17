@@ -7,14 +7,27 @@ const API_BASE = "https://api.escuelajs.co/api/v1";
 
 // ===== PLATZI API =====
 export async function fetchProducts(): Promise<ApiProduct[]> {
-  const res = await fetch(`${API_BASE}/products`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch products");
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/products`, { 
+      cache: "no-store"
+    });
+    if (!res.ok) throw new Error("Failed to fetch products");
+    return res.json();
+  } catch (error) {
+    console.error("Error fetching products from Platzi API:", error);
+    // Return empty array instead of throwing - app will still work
+    return [];
+  }
 }
 
 export async function fetchProductBySlug(slug: string): Promise<ApiProduct | undefined> {
-  const products = await fetchProducts();
-  return products.find((p) => p.slug === slug);
+  try {
+    const products = await fetchProducts();
+    return products.find((p) => p.slug === slug);
+  } catch (error) {
+    console.error("Error fetching product by slug:", error);
+    return undefined;
+  }
 }
 
 // ===== LOCAL JSON =====

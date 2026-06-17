@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import useSWR, { useSWRConfig } from "swr";
 import type { Product } from "@/lib/types";
 import { fmtUsd } from "@/lib/format";
 import { toast } from "sonner";
@@ -11,14 +12,36 @@ interface ProductAdminClientProps {
   initialProducts: Product[];
 }
 
-const emptyProduct = (): Partial<Product> & { isNew: boolean } => ({
-  isNew: true,
+interface ProductFormInputs extends Omit<Product, 'specs' | 'features'> {
+  specsText: string;
+  featuresText: string;
+}
+
+const fetcher = (url: string) => fetch(url).then((res) => {
+  if (!res.ok) throw new Error("Failed to fetch products");
+  return res.json();
+});
+
+function isValidImageSrc(url: string | null | undefined): boolean {
+  if (!url || url.trim() === "") return false;
+  if (url.startsWith("/")) return true;
+  if (url.startsWith("blob:")) return true;
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const emptyProduct = (): ProductFormInputs => ({
+  id: 0,
   slug: "",
   name: "",
   category: "Safety Helmet",
   description: "",
-  specs: {},
-  features: [],
+  specsText: "{}",
+  featuresText: "",
   price: 0,
   stock: 0,
   rating: 4.5,
@@ -26,16 +49,21 @@ const emptyProduct = (): Partial<Product> & { isNew: boolean } => ({
   imageUrl: "/images/products/placeholder.svg",
   featured: false,
   badge: null,
+  creationAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 });
 
 export function ProductAdminClient({ initialProducts }: ProductAdminClientProps) {
   const router = useRouter();
-  const [products, setProducts] = useState(initialProducts);
-  const [editing, setEditing] = useState<(Partial<Product> & { isNew?: boolean }) | null>(null);
-  const [specsText, setSpecsText] = useState("");
-  const [featuresText, setFeaturesText] = useState("");
+  const { mutate } = useSWRConfig();
+  const [editing, setEditing] = useState<ProductFormInputs | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [prevImagePreview, setPrevImagePreview] = useState<string | null>(null);
+
+  const { data: products, error, isLoading } = useSWR<Product[]>("/api/admin/products", fetcher, {
+    fallbackData: initialProducts,
+    revalidateOnFocus: false,
+  });
 
   useEffect(() => {
     return () => {
@@ -46,22 +74,24 @@ export function ProductAdminClient({ initialProducts }: ProductAdminClientProps)
   }, [prevImagePreview]);
 
   const openEdit = (p: Product) => {
-    setEditing({ ...p, isNew: false });
-    setSpecsText(JSON.stringify(p.specs || {}, null, 2));
-    setFeaturesText((p.features || []).join("\n"));
+    const formData: ProductFormInputs = {
+      ...p,
+      specsText: JSON.stringify(p.specs || {}, null, 2),
+      featuresText: (p.features || []).join("\n"),
+    };
+    setEditing(formData);
+    setPrevImagePreview(null);
   };
 
   const openNew = () => {
     setEditing(emptyProduct());
-    setSpecsText("{}");
-    setFeaturesText("");
     setImageFile(null);
+    setPrevImagePreview(null);
   };
 
   const cancel = () => {
     if (prevImagePreview) {
       URL.revokeObjectURL(prevImagePreview);
-      setPrevImagePreview(null);
     }
     setEditing(null);
     setImageFile(null);
@@ -88,22 +118,21 @@ export function ProductAdminClient({ initialProducts }: ProductAdminClientProps)
       URL.revokeObjectURL(prevImagePreview);
     }
     setPrevImagePreview(previewUrl);
-
     setImageFile(file);
-    setEditing((prev) => ({ ...prev, imageUrl: previewUrl }));
   };
 
-  const save = async () => {
+  const onSave = async (data: ProductFormInputs) => {
     if (!editing) return;
+
     let specs: Record<string, string> = {};
     try {
-      specs = JSON.parse(specsText || "{}");
+      specs = JSON.parse(data.specsText || "{}");
     } catch {
       toast.error("Specs harus JSON valid");
       return;
     }
 
-    let imageUrl = editing.imageUrl || "/images/products/placeholder.svg";
+    let imageUrl = data.imageUrl || "/images/products/placeholder.svg";
     if (imageFile) {
       const formData = new FormData();
       formData.append("file", imageFile);
@@ -112,52 +141,80 @@ export function ProductAdminClient({ initialProducts }: ProductAdminClientProps)
         body: formData,
       });
       if (!res.ok) {
-        const error = await res.json();
-        toast.error(error.error || "Failed to upload image");
+        const errorData = await res.json();
+        toast.error(errorData.error || "Failed to upload image");
         return;
       }
-      const data = await res.json();
-      imageUrl = data.url;
+      const uploadRes = await res.json();
+      imageUrl = uploadRes.url;
     }
 
     const body = {
-      ...editing,
+      ...data,
       specs,
-      features: featuresText.split("\n").filter(Boolean),
-      price: Number(editing.price),
-      stock: Number(editing.stock),
-      rating: Number(editing.rating),
-      reviews: Number(editing.reviews),
+      features: data.featuresText.split("\n").filter(Boolean),
+      price: Number(data.price),
+      stock: Number(data.stock),
+      rating: Number(data.rating),
+      reviews: Number(data.reviews),
       imageUrl,
     };
-    const res = await fetch("/api/admin/products", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
+
+    try {
+      const res = await fetch("/api/admin/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        toast.error("Gagal menyimpan produk");
+        return;
+      }
+
+      toast.success("Produk disimpan");
+      setEditing(null);
+      setImageFile(null);
+      router.refresh();
+      mutate("/api/admin/products");
+    } catch {
       toast.error("Gagal menyimpan produk");
-      return;
     }
-    toast.success("Produk disimpan");
-    setEditing(null);
-    setImageFile(null);
-    router.refresh();
-    const updated = await fetch("/api/admin/products").then((r) => r.json());
-    setProducts(updated);
   };
 
   const remove = async (id: number) => {
     if (!confirm("Hapus produk ini?")) return;
-    const res = await fetch(`/api/admin/products?id=${id}`, { method: "DELETE" });
-    if (!res.ok) {
+
+    try {
+      const res = await fetch(`/api/admin/products?id=${id}`, { method: "DELETE" });
+
+      if (!res.ok) {
+        toast.error("Gagal menghapus");
+        return;
+      }
+
+      toast.success("Produk dihapus");
+      mutate("/api/admin/products");
+    } catch {
       toast.error("Gagal menghapus");
-      return;
     }
-    toast.success("Produk dihapus");
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-    router.refresh();
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center">Loading products...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center text-red-600">Failed to load products</div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -173,30 +230,30 @@ export function ProductAdminClient({ initialProducts }: ProductAdminClientProps)
       {editing && (
         <div className="mb-8 rounded-2xl border border-[var(--orange)] bg-white p-6">
           <h2 className="mb-4 font-bold text-[var(--black)]">
-            {editing.isNew ? "New Product" : `Edit: ${editing.name}`}
+            {editing.id === 0 ? "New Product" : `Edit: ${editing.name}`}
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <form onSubmit={(e) => { e.preventDefault(); onSave(editing); }} className="grid gap-4 sm:grid-cols-2">
             <input
               placeholder="Name"
-              value={editing.name ?? ""}
+              value={editing.name}
               onChange={(e) => setEditing({ ...editing, name: e.target.value })}
               className="rounded border px-3 py-2 text-sm"
             />
             <input
               placeholder="Slug"
-              value={editing.slug ?? ""}
+              value={editing.slug}
               onChange={(e) => setEditing({ ...editing, slug: e.target.value })}
               className="rounded border px-3 py-2 text-sm"
             />
             <input
               placeholder="Category"
-              value={editing.category ?? ""}
+              value={editing.category}
               onChange={(e) => setEditing({ ...editing, category: e.target.value })}
               className="rounded border px-3 py-2 text-sm"
             />
             <div className="sm:col-span-2">
               <label className="mb-2 block text-sm font-medium text-[var(--black)]">Product Image</label>
-              {editing.imageUrl && !imageFile && (
+              {isValidImageSrc(editing.imageUrl) && !imageFile && (
                 <div className="mb-3 flex items-center gap-3">
                   <div className="relative h-20 w-20 overflow-hidden rounded-lg border border-[var(--gray-200)]">
                     <Image src={editing.imageUrl} alt="Current" fill className="object-contain" />
@@ -204,10 +261,10 @@ export function ProductAdminClient({ initialProducts }: ProductAdminClientProps)
                   <span className="text-sm text-[var(--gray-600)]">{editing.imageUrl}</span>
                 </div>
               )}
-              {imageFile && (
+              {imageFile && prevImagePreview && (
                 <div className="mb-3 flex items-center gap-3">
                   <div className="relative h-20 w-20 overflow-hidden rounded-lg border border-[var(--gray-200)]">
-                    <Image src={URL.createObjectURL(imageFile)} alt="Preview" className="object-contain" />
+                    <Image src={prevImagePreview} alt="Preview" fill className="object-contain" />
                   </div>
                   <span className="text-sm text-[var(--gray-600)]">{imageFile.name}</span>
                 </div>
@@ -225,55 +282,55 @@ export function ProductAdminClient({ initialProducts }: ProductAdminClientProps)
             <input
               type="number"
               placeholder="Price"
-              value={editing.price ?? 0}
+              value={editing.price}
               onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })}
               className="rounded border px-3 py-2 text-sm"
             />
             <input
               type="number"
               placeholder="Stock"
-              value={editing.stock ?? 0}
+              value={editing.stock}
               onChange={(e) => setEditing({ ...editing, stock: Number(e.target.value) })}
               className="rounded border px-3 py-2 text-sm"
             />
             <textarea
               placeholder="Description"
-              value={editing.description ?? ""}
+              value={editing.description}
               onChange={(e) => setEditing({ ...editing, description: e.target.value })}
               className="rounded border px-3 py-2 text-sm sm:col-span-2"
               rows={3}
             />
             <textarea
               placeholder="Specs (JSON)"
-              value={specsText}
-              onChange={(e) => setSpecsText(e.target.value)}
+              value={editing.specsText}
+              onChange={(e) => setEditing({ ...editing, specsText: e.target.value })}
               className="rounded border px-3 py-2 font-mono text-xs sm:col-span-2"
               rows={4}
             />
             <textarea
               placeholder="Features (one per line)"
-              value={featuresText}
-              onChange={(e) => setFeaturesText(e.target.value)}
+              value={editing.featuresText}
+              onChange={(e) => setEditing({ ...editing, featuresText: e.target.value })}
               className="rounded border px-3 py-2 text-sm sm:col-span-2"
               rows={3}
             />
             <label className="flex items-center gap-2 text-sm text-[var(--black)]">
               <input
                 type="checkbox"
-                checked={editing.featured ?? false}
+                checked={editing.featured}
                 onChange={(e) => setEditing({ ...editing, featured: e.target.checked })}
               />
               Featured
             </label>
-          </div>
-          <div className="mt-4 flex gap-2">
-            <button type="button" onClick={save} className="btn btn-primary btn-sm">
-              Save
-            </button>
-            <button type="button" onClick={cancel} className="btn btn-secondary btn-sm">
-              Cancel
-            </button>
-          </div>
+            <div className="sm:col-span-2 flex gap-2">
+              <button type="button" onClick={() => onSave(editing)} className="btn btn-primary btn-sm">
+                Save
+              </button>
+              <button type="button" onClick={cancel} className="btn btn-secondary btn-sm">
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
@@ -291,11 +348,11 @@ export function ProductAdminClient({ initialProducts }: ProductAdminClientProps)
               </tr>
             </thead>
             <tbody>
-              {products.map((p) => (
+              {products?.map((p) => (
                 <tr key={p.id} className="border-t border-[var(--gray-100)]">
                   <td className="px-4 py-3">
                     <div className="relative h-11 w-11 overflow-hidden rounded bg-[var(--gray-50)]">
-                      {p.imageUrl && p.imageUrl.trim() !== "" ? (
+                      {isValidImageSrc(p.imageUrl) ? (
                         <Image src={p.imageUrl} alt="" fill className="object-contain" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import bcrypt from "bcryptjs";
@@ -18,6 +19,12 @@ function saveUsers(users: User[]) {
 // GET - Get all users
 export async function GET() {
   try {
+    // Check authentication
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const users = getUsers();
     // Don't send password hashes to client
     const safeUsers = users.map(({ passwordHash, ...rest }) => rest);
@@ -33,6 +40,12 @@ export async function GET() {
 // POST - Create new user
 export async function POST(req: NextRequest) {
   try {
+    // Check authentication
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { email, name, password, role = "USER" } = body;
 
@@ -80,6 +93,12 @@ export async function POST(req: NextRequest) {
 // PUT - Update user
 export async function PUT(req: NextRequest) {
   try {
+    // Check authentication
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { id, email, name, password, role } = body;
 
@@ -120,6 +139,12 @@ export async function PUT(req: NextRequest) {
 // DELETE - Delete user
 export async function DELETE(req: NextRequest) {
   try {
+    // Check authentication
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 

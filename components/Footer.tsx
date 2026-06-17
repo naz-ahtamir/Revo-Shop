@@ -2,36 +2,36 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 interface Category {
   id: number;
   name: string;
 }
 
+const fetcher = (url: string) => 
+  fetch(url)
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .catch((error) => {
+      console.error("Fetcher error:", error);
+      throw error;
+    });
+
 export function Footer() {
   const pathname = usePathname();
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    // Fetch categories from API
-    fetch("/api/categories")
-      .then((res) => res.json())
-      .then((data: Category[]) => {
-        // Take first 4 categories for footer
-        setCategories(data.slice(0, 4));
-      })
-      .catch((err) => {
-        console.error("Failed to load categories:", err);
-        // Fallback categories (ensure all have at least 2 characters)
-        setCategories([
-          { id: 1, name: "Electronics" },
-          { id: 2, name: "Clothes" },
-          { id: 3, name: "Furniture" },
-          { id: 4, name: "Shoes" }
-        ]);
-      });
-  }, []);
+  
+  const { data: categories, error } = useSWR<Category[]>("/api/categories", fetcher, {
+    revalidateOnFocus: false,
+    fallbackData: [
+      { id: 1, name: "Electronics" },
+      { id: 2, name: "Clothes" },
+      { id: 3, name: "Furniture" },
+      { id: 4, name: "Shoes" }
+    ] as Category[]
+  });
 
   if (pathname.startsWith("/admin")) return null;
 
@@ -53,7 +53,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sm text-[var(--black)]">
-              Your trusted global marketplace for quality products across all categories. Fast delivery, competitive prices, and authentic guaranteed.
+              Your trusted global marketplace for authentic products across every category—delivering speed, unbeatable value, and guaranteed originality.
             </p>
           </div>
           <div>
@@ -69,7 +69,8 @@ export function Footer() {
             <div className="mb-4 text-xs font-bold uppercase tracking-wider text-[var(--black)]">Categories</div>
             <div className="flex flex-col gap-2">
               {categories
-                .filter((c) => c.name.length >= 2) // Filter out categories with less than 2 characters
+                ?.filter((c) => c.name.length >= 2)
+                .slice(0, 4)
                 .map((c) => (
                   <Link
                     key={c.id}
@@ -84,9 +85,9 @@ export function Footer() {
           <div>
             <div className="mb-4 text-xs font-bold uppercase tracking-wider text-[var(--black)]">Contact</div>
             <div className="space-y-2 text-sm text-[var(--black)]">
-              <p>Global Marketplace HQ</p>               
-              <p>+1-800-REVO-SHOP</p>
-              <p>Mon-Fri : 9:00 – 18:00 UTC</p>
+              <p>Jl. Veteran Selatan No. 88, Mandala, Mamajang, Kota Makassar, Sulawesi Selatan 90114, Indonesia.</p>               
+              <p>0822-2071-5073</p>
+              <p>Mon-Fri : 9:00 – 18:00 WITA</p>
               <a href="https://www.naz-ahtamir.site/"><p className="font-bold">www.naz-ahtamir.site</p></a>              
             </div>
           </div>

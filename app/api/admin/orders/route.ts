@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { readFileSync } from "fs";
 import { join } from "path";
 import type { Order } from "@/lib/types";
@@ -13,6 +14,12 @@ function getOrders(): Order[] {
 // GET - Get all orders for admin
 export async function GET(req: NextRequest) {
   try {
+    // Check authentication - orders admin endpoint requires admin role
+    const session = await auth();
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
 

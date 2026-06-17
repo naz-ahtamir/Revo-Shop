@@ -10,8 +10,30 @@ interface ProductCardProps {
   product: ApiProduct;
 }
 
+function getImageUrl(images: string[] | undefined): string {
+  if (!images || images.length === 0) return "";
+
+  let url = images[0];
+
+  if (url?.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(url);
+      url = Array.isArray(parsed) ? parsed[0] : "";
+    } catch {
+      return "";
+    }
+  }
+
+  try {
+    new URL(url);
+    return url;
+  } catch {
+    return "";
+  }
+}
+
 export function ProductCard({ product }: ProductCardProps) {
-  const imageUrl = product.images?.[0] || "";
+  const imageUrl = getImageUrl(product.images);
 
   return (
     <div className="group rounded-2xl border border-[var(--gray-200)] bg-white p-5 transition-all hover:border-[var(--orange)] hover:shadow-lg">

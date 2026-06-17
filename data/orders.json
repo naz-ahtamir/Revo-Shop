@@ -1,47 +1,38 @@
 [
   {
-    "id": "ORD-2025-001",
-    "customer": "PT Semen Indonesia",
-    "product": "3M Safety Helmet H-700",
-    "qty": 50,
-    "total": 9250000,
-    "status": "Delivered",
-    "date": "2025-06-01"
-  },
-  {
-    "id": "ORD-2025-002",
-    "customer": "Waskita Karya",
-    "product": "King's KWD206X Safety Shoes",
-    "qty": 30,
-    "total": 12750000,
-    "status": "Processing",
-    "date": "2025-06-02"
-  },
-  {
-    "id": "ORD-2025-003",
-    "customer": "PT Vale Indonesia",
-    "product": "Petzl VOLT Full Body Harness",
-    "qty": 15,
-    "total": 10275000,
-    "status": "Shipped",
-    "date": "2025-06-02"
-  },
-  {
-    "id": "ORD-2025-004",
-    "customer": "Pertamina EP",
-    "product": "DuPont Nomex FR Coverall",
-    "qty": 100,
-    "total": 125000000,
-    "status": "Processing",
-    "date": "2025-06-03"
-  },
-  {
-    "id": "ORD-2025-005",
-    "customer": "PT Freeport Indonesia",
-    "product": "3M 6200 Half Face Respirator",
-    "qty": 200,
-    "total": 57000000,
+    "id": "ORD-001",
+    "customer": "Budi Santoso",
+    "product": "Classic Red Pullover Hoodie",
+    "qty": 2,
+    "total": 20,
     "status": "Pending",
-    "date": "2025-06-03"
+    "date": "2026-06-01T08:00:00.000Z"
+  },
+  {
+    "id": "ORD-002",
+    "customer": "Siti Rahayu",
+    "product": "Classic Comfort Fit Joggers",
+    "qty": 5,
+    "total": 75,
+    "status": "Processing",
+    "date": "2026-06-05T10:30:00.000Z"
+  },
+  {
+    "id": "ORD-003",
+    "customer": "Ahmad Fauzi",
+    "product": "Classic Black T-Shirt",
+    "qty": 10,
+    "total": 350,
+    "status": "Delivered",
+    "date": "2026-06-10T14:00:00.000Z"
+  },
+  {
+    "id": "ORD-1781662997811",
+    "customer": "Admin RevoShop",
+    "product": "Sleek Wireless Computer Mouse",
+    "qty": 2,
+    "total": 27,
+    "status": "Pending",
+    "date": "2026-06-17"
   }
 ]

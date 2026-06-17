@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import useSWR, { useSWRConfig } from "swr";
 import { toast } from "sonner";
 import { fmtUsd } from "@/lib/format";
 import Link from "next/link";
@@ -23,34 +23,27 @@ interface OrderDetailClientProps {
   orderId: string;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => {
+  if (!res.ok) throw new Error("Failed to fetch order");
+  return res.json();
+});
+
 export function OrderDetailClient({ orderId }: OrderDetailClientProps) {
   const router = useRouter();
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const { mutate } = useSWRConfig();
 
-  useEffect(() => {
-    fetchOrder();
-  }, [orderId]);
-
-  async function fetchOrder() {
-    try {
-      const res = await fetch(`/api/orders/${orderId}`);
-      if (!res.ok) throw new Error("Failed to fetch order");
-      const data = await res.json();
-      setOrder(data);
-    } catch (error) {
-      toast.error("Failed to load order");
-      router.push("/admin/orders");
-    } finally {
-      setLoading(false);
+  const { data: order, error, isLoading } = useSWR<Order>(
+    `/api/orders/${orderId}`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      refreshInterval: 5000, // Refresh every 5 seconds for real-time status updates
     }
-  }
+  );
 
   async function handleStatusUpdate(newStatus: OrderStatus) {
     if (!order) return;
 
-    setUpdating(true);
     try {
       const res = await fetch(`/api/orders/${orderId}`, {
         method: "PUT",
@@ -60,13 +53,10 @@ export function OrderDetailClient({ orderId }: OrderDetailClientProps) {
 
       if (!res.ok) throw new Error("Failed to update order");
 
-      const updatedOrder = await res.json();
-      setOrder(updatedOrder);
       toast.success("Order status updated");
+      mutate(`/api/orders/${orderId}`);
     } catch (error) {
       toast.error("Failed to update order");
-    } finally {
-      setUpdating(false);
     }
   }
 
@@ -74,26 +64,24 @@ export function OrderDetailClient({ orderId }: OrderDetailClientProps) {
     if (!order) return;
     if (!confirm("Are you sure you want to cancel this order?")) return;
 
-    setUpdating(true);
     try {
       const res = await fetch(`/api/orders/${orderId}`, {
         method: "DELETE",
       });
 
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Failed to cancel order");
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to cancel order");
       }
 
       toast.success("Order cancelled");
       router.push("/admin/orders");
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Failed to cancel order");
-      setUpdating(false);
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">Loading order...</div>
@@ -101,7 +89,7 @@ export function OrderDetailClient({ orderId }: OrderDetailClientProps) {
     );
   }
 
-  if (!order) {
+  if (error || !order) {
     return (
       <div className="py-20 text-center">
         <p className="text-[var(--gray-500)]">Order not found</p>
@@ -192,7 +180,7 @@ export function OrderDetailClient({ orderId }: OrderDetailClientProps) {
                 key={status}
                 type="button"
                 onClick={() => handleStatusUpdate(status)}
-                disabled={updating || order.status === status}
+                disabled={order.status === status}
                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   order.status === status
                     ? "bg-[var(--orange)] text-white"
@@ -216,7 +204,6 @@ export function OrderDetailClient({ orderId }: OrderDetailClientProps) {
           <button
             type="button"
             onClick={handleCancelOrder}
-            disabled={updating}
             className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel Order

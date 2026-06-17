@@ -9,8 +9,8 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const allProducts = await fetchProducts();
-  const featured = allProducts.slice(0, 6);
-  const heroPreview = allProducts.slice(0, 4);
+  const featured = allProducts.length > 0 ? allProducts.slice(0, 6) : [];
+  const heroPreview = allProducts.length > 0 ? allProducts.slice(0, 4) : [];
 
   const features: [LucideIcon, string, string][] = [
     [Trophy, "Quality Assured", "All sellers verified and products authenticated."],
@@ -122,7 +122,7 @@ export default async function HomePage() {
               All Categories →
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-px bg-neutral-100 md:grid-cols-3 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-px bg-neutral-100 md:grid-cols-3 lg:grid-cols-4">
             {categories.map((c) => (
               <Link
                 key={c.name}
@@ -177,9 +177,9 @@ export default async function HomePage() {
           </div>
           <div className="grid gap-px bg-neutral-100 md:grid-cols-2 lg:grid-cols-4">
             {features.map(([Icon, title, desc]) => (
-              <div key={title} className="group bg-white p-10 transition-colors hover:bg-[#8141E6]">
-                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-[#8141E6]/10 transition-colors group-hover:bg-white/20">
-                  <Icon className="h-6 w-6 text-[#8141E6] transition-colors group-hover:text-white" />
+              <div key={title} className="group bg-white p-10 transition-colors hover:bg-[#8141E6] text-center">
+                <div className="mb-6 flex h-30 w-30 items-center justify-center rounded-full bg-[#8141E6]/10 transition-colors group-hover:bg-white/20 mx-auto">
+                  <Icon className="h-25 w-25 text-[#8141E6] transition-colors group-hover:text-white" />
                 </div>
                 <h3 className="mb-2 text-sm font-bold text-black transition-colors group-hover:text-white">
                   {title}

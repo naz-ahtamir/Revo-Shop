@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useSWR, { useSWRConfig } from "swr";
 import { toast } from "sonner";
 
 type UserRole = "USER" | "ADMIN";
@@ -12,9 +13,13 @@ interface User {
   role: UserRole;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => {
+  if (!res.ok) throw new Error("Failed to fetch users");
+  return res.json();
+});
+
 export function UsersAdminClient() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { mutate } = useSWRConfig();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     id: "",
@@ -24,22 +29,9 @@ export function UsersAdminClient() {
     password: "",
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  async function fetchUsers() {
-    try {
-      const res = await fetch("/api/admin/users");
-      if (!res.ok) throw new Error("Failed to fetch users");
-      const data = await res.json();
-      setUsers(data);
-    } catch (error) {
-      toast.error("Failed to load users");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const { data: users, error, isLoading } = useSWR<User[]>("/api/admin/users", fetcher, {
+    revalidateOnFocus: false,
+  });
 
   function handleEdit(user: User) {
     setEditingId(user.id);
@@ -83,7 +75,7 @@ export function UsersAdminClient() {
 
       toast.success(editingId ? "User updated" : "User created");
       handleCancelEdit();
-      fetchUsers();
+      mutate("/api/admin/users");
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Failed to save user");
     }
@@ -100,16 +92,24 @@ export function UsersAdminClient() {
       if (!res.ok) throw new Error("Failed to delete user");
 
       toast.success("User deleted");
-      fetchUsers();
+      mutate("/api/admin/users");
     } catch (error) {
       toast.error("Failed to delete user");
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">Loading users...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center text-red-600">Failed to load users</div>
       </div>
     );
   }
@@ -241,7 +241,7 @@ export function UsersAdminClient() {
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--gray-200)]">
-            {users.map((user) => (
+            {users?.map((user) => (
               <tr key={user.id}>
                 <td className="px-6 py-4 text-sm text-[var(--black)]">
                   {user.name}
@@ -280,7 +280,7 @@ export function UsersAdminClient() {
             ))}
           </tbody>
         </table>
-        {users.length === 0 && (
+        {users?.length === 0 && (
           <div className="py-12 text-center text-[var(--gray-500)]">
             No users found
           </div>
