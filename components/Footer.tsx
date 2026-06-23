@@ -2,37 +2,46 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import useSWR from "swr";
+import { useState, useEffect } from "react";
 
 interface Category {
   id: number;
   name: string;
 }
-
-const fetcher = (url: string) => 
-  fetch(url)
-    .then((res) => {
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json();
-    })
-    .catch((error) => {
-      console.error("Fetcher error:", error);
-      throw error;
-    });
+const FALLBACK_CATEGORIES: Category[] = [
+  { id: 1, name: "Electronics" },
+  { id: 2, name: "Clothes" },
+  { id: 3, name: "Furniture" },
+  { id: 4, name: "Shoes" },
+];
 
 export function Footer() {
   const pathname = usePathname();
-  
-  const { data: categories, error } = useSWR<Category[]>("/api/categories", fetcher, {
-    revalidateOnFocus: false,
-    fallbackData: [
-      { id: 1, name: "Electronics" },
-      { id: 2, name: "Clothes" },
-      { id: 3, name: "Furniture" },
-      { id: 4, name: "Shoes" }
-    ] as Category[]
-  });
 
+ const [categories, setCategories] = useState<Category[]>(FALLBACK_CATEGORIES);
+ const [isLoading, setIsLoading] = useState(true);
+ const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/categories");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        // Update state dengan data dari API
+        setCategories(data);
+        setError(null);
+      } catch (err) {
+        console.error("Gagal fetch kategori:", err);
+        setError(err instanceof Error ? err : new Error("Unknown error"));
+   } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+  
   if (pathname.startsWith("/admin")) return null;
 
   return (

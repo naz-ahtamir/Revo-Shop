@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import bcrypt from "bcryptjs";
-import type { User } from "@/lib/types";
+import { userSchema, type User } from "@/lib/types";
 
 const usersPath = join(process.cwd(), "data", "users.json");
 
@@ -18,18 +18,17 @@ function saveUsers(users: User[]) {
 
 // GET - Get all users
 export async function GET() {
-  try {
-    // Check authentication
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const session = await requireAdmin();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
+  try {
     const users = getUsers();
     // Don't send password hashes to client
-    const safeUsers = users.map(({ passwordHash, ...rest }) => rest);
+    const safeUsers = users.map(({ passwordHash: _, ...rest }) => rest);
     return NextResponse.json(safeUsers);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch users" },
       { status: 500 }
@@ -39,22 +38,34 @@ export async function GET() {
 
 // POST - Create new user
 export async function POST(req: NextRequest) {
+  const session = await requireAdmin();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body;
   try {
-    // Check authentication
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON payload" },
+      { status: 400 }
+    );
+  }
+  
+  const parsed = userSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { 
+        error: "Validation failed", 
+        details: parsed.error.format() 
+      },
+      { status: 400 }
+    );
+  }
 
-    const body = await req.json();
-    const { email, name, password, role = "USER" } = body;
-
-    if (!email || !name || !password) {
-      return NextResponse.json(
-        { error: "Email, name, and password are required" },
-        { status: 400 }
-      );
-    }
+  try {
+    const { email, name, password, role } = parsed.data;
 
     const users = getUsers();
 
@@ -80,9 +91,9 @@ export async function POST(req: NextRequest) {
     users.push(newUser);
     saveUsers(users);
 
-    const { passwordHash: _, ...safeUser } = newUser;
+    const { passwordHash: _pw, ...safeUser } = newUser;
     return NextResponse.json(safeUser, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to create user" },
       { status: 500 }
@@ -92,23 +103,45 @@ export async function POST(req: NextRequest) {
 
 // PUT - Update user
 export async function PUT(req: NextRequest) {
+  const session = await requireAdmin();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body;
   try {
-    // Check authentication
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON payload" },
+      { status: 400 }
+    );
+  }
+  
+  const { id, ...updateData } = body;
 
-    const body = await req.json();
-    const { id, email, name, password, role } = body;
+  if (!id) {
+    return NextResponse.json(
+      { error: "User ID is required" },
+      { status: 400 }
+    );
+  }
 
-    if (!id) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
-    }
+  // Use partial schema for updates (all fields optional)
+  const updateSchema = userSchema.partial();
+  const parsed = updateSchema.safeParse(updateData);
+  
+  if (!parsed.success) {
+    return NextResponse.json(
+      { 
+        error: "Validation failed", 
+        details: parsed.error.format() 
+      },
+      { status: 400 }
+    );
+  }
 
+  try {
     const users = getUsers();
     const userIndex = users.findIndex((u) => u.id === id);
 
@@ -116,19 +149,21 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    const validatedData = parsed.data;
+    
     // Update user fields
-    if (email) users[userIndex].email = email;
-    if (name) users[userIndex].name = name;
-    if (role) users[userIndex].role = role;
-    if (password) {
-      users[userIndex].passwordHash = await bcrypt.hash(password, 10);
+    if (validatedData.email) users[userIndex].email = validatedData.email;
+    if (validatedData.name) users[userIndex].name = validatedData.name;
+    if (validatedData.role) users[userIndex].role = validatedData.role;
+    if (validatedData.password) {
+      users[userIndex].passwordHash = await bcrypt.hash(validatedData.password, 10);
     }
 
     saveUsers(users);
 
-    const { passwordHash: _, ...safeUser } = users[userIndex];
+    const { passwordHash: _pw2, ...safeUser } = users[userIndex];
     return NextResponse.json(safeUser);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to update user" },
       { status: 500 }
@@ -138,13 +173,12 @@ export async function PUT(req: NextRequest) {
 
 // DELETE - Delete user
 export async function DELETE(req: NextRequest) {
-  try {
-    // Check authentication
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const session = await requireAdmin();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
+  try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
@@ -164,7 +198,7 @@ export async function DELETE(req: NextRequest) {
 
     saveUsers(filteredUsers);
     return NextResponse.json({ message: "User deleted successfully" });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete user" },
       { status: 500 }

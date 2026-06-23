@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     orders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return NextResponse.json(orders);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch orders" },
       { status: 500 }

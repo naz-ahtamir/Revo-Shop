@@ -1,14 +1,7 @@
-import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth";
 import { fetchProducts } from "@/lib/data";
+import { productSchema } from "@/lib/types";
 import { NextResponse } from "next/server";
-
-async function requireAdmin() {
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return null;
-  }
-  return session;
-}
 
 export async function GET() {
   const session = await requireAdmin();
@@ -43,19 +36,42 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  let body;
   try {
-    const body = await request.json();
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+  }
+
+  // Convert price to number if it's a string
+  if (body.price) {
+    body.price = Number(body.price);
+  }
+
+  const parsed = productSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { 
+        error: "Validation failed", 
+        details: parsed.error.format() 
+      },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const validatedData = parsed.data;
     
     // FAKE CREATE - just return success with fake ID
     // In reality, Platzi API doesn't persist this
     const fakeProduct = {
       id: Date.now(), // Fake ID
-      name: body.name ?? "",
-      slug: (body.name ?? "").toLowerCase().replace(/\s+/g, "-"),
-      price: Number(body.price) || 0,
-      description: body.description ?? "",
-      imageUrl: body.imageUrl ?? "https://placehold.co/600x400",
-      category: body.category ?? "Other", // String category
+      name: validatedData.name,
+      slug: validatedData.slug || validatedData.name.toLowerCase().replace(/\s+/g, "-"),
+      price: validatedData.price,
+      description: validatedData.description,
+      imageUrl: validatedData.imageUrl || "https://placehold.co/600x400",
+      category: validatedData.category,
       creationAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -72,12 +88,43 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  let body;
   try {
-    const body = await request.json();
-    
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+  }
+
+  // Convert price to number if it's a string
+  if (body.price) {
+    body.price = Number(body.price);
+  }
+
+  // Use partial schema for updates (all fields optional except id)
+  const { id, ...updateData } = body;
+  
+  if (!id) {
+    return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
+  }
+
+  const updateSchema = productSchema.partial();
+  const parsed = updateSchema.safeParse(updateData);
+  
+  if (!parsed.success) {
+    return NextResponse.json(
+      { 
+        error: "Validation failed", 
+        details: parsed.error.format() 
+      },
+      { status: 400 }
+    );
+  }
+
+  try {
     // FAKE UPDATE - just return success
     const updated = {
-      ...body,
+      id,
+      ...parsed.data,
       updatedAt: new Date().toISOString(),
     };
     

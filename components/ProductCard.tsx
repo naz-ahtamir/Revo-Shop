@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ApiProduct } from "@/lib/types";
 import { fmtUsd } from "@/lib/format";
+import { memo } from "react";
 import { addToCartClient } from "@/components/cart-actions";
+
 
 interface ProductCardProps {
   product: ApiProduct;
@@ -32,7 +34,7 @@ function getImageUrl(images: string[] | undefined): string {
   }
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
   const imageUrl = getImageUrl(product.images);
 
   return (
@@ -75,4 +77,4 @@ export function ProductCard({ product }: ProductCardProps) {
       </button>
     </div>
   );
-}
+});

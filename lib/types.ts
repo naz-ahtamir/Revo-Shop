@@ -29,12 +29,10 @@ export type ApiProduct = {
   updatedAt: string;
 };
 
-// ===== TAMBAHKAN INI DI BAWAHNYA UNTUK MENYEMBUHKAN ERROR COMPONENT =====
 export type Product = Omit<ApiProduct, "title" | "images" | "category"> & {
   name: string;       // Menggantikan 'title' agar UI Admin tidak error
   imageUrl: string;   // Menggantikan 'images' agar Image Next.js tidak error
   category: string;   // Menggantikan category object dengan string
-  // Tambahkan properti opsional jika komponen admin Anda membutuhkannya:
   stock?: number;
   rating?: number;
   reviews?: number;
@@ -60,6 +58,36 @@ export interface StoreSettings {
   taxRate: string;
   defaultShipping: string;
 }
+
+// Zod schema for StoreSettings validation
+import { z } from "zod";
+
+export const storeSettingsSchema = z.object({
+  storeName: z.string().min(1, "Store name is required"),
+  currency: z.string().min(1, "Currency is required"),
+  taxRate: z.string().min(1, "Tax rate is required"),
+  defaultShipping: z.string().min(1, "Default shipping is required"),
+});
+
+export const userSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(["USER", "ADMIN"]).default("USER"),
+});
+
+export const productSchema = z.object({
+  name: z.string().min(1, "Product name is required"),
+  slug: z.string().optional(),
+  price: z.number().positive("Price must be positive"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  imageUrl: z.string().optional(),
+  category: z.string().min(1, "Category is required"),
+});
+
+export type StoreSettingsInput = z.infer<typeof storeSettingsSchema>;
+export type UserInput = z.infer<typeof userSchema>;
+export type ProductInput = z.infer<typeof productSchema>;
 
 export interface CartItem {
   id: number;

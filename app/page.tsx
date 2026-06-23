@@ -129,7 +129,7 @@ export default async function HomePage() {
                 href={`/products?category=${encodeURIComponent(c.name)}`}
                 className="group flex flex-col items-center bg-white px-4 py-8 text-center transition-colors hover:bg-[#8141E6]"
               >
-                <div className="mb-4 flex h-25 w-25 items-center justify-center rounded-full bg-neutral-100 transition-colors group-hover:bg-white/20">
+                <div className="mb-4 flex h-30 w-30 items-center justify-center rounded-full bg-neutral-100 transition-colors group-hover:bg-white/20">
                   <c.Icon className="h-14 w-14 text-[#8141E6] transition-colors group-hover:text-white" />
                 </div>
                 <div className="text-xs font-semibold text-black transition-colors group-hover:text-white">
@@ -179,7 +179,7 @@ export default async function HomePage() {
             {features.map(([Icon, title, desc]) => (
               <div key={title} className="group bg-white p-10 transition-colors hover:bg-[#8141E6] text-center">
                 <div className="mb-6 flex h-30 w-30 items-center justify-center rounded-full bg-[#8141E6]/10 transition-colors group-hover:bg-white/20 mx-auto">
-                  <Icon className="h-25 w-25 text-[#8141E6] transition-colors group-hover:text-white" />
+                  <Icon className="h-17 w-17 text-[#8141E6] transition-colors group-hover:text-white" />
                 </div>
                 <h3 className="mb-2 text-sm font-bold text-black transition-colors group-hover:text-white">
                   {title}

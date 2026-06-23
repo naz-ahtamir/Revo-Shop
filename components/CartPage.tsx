@@ -9,39 +9,35 @@ import type { CartItem } from "@/lib/types";
 import { fmtUsd } from "@/lib/format";
 import { getCartFromStorage, saveCartToStorage } from "@/lib/cart";
 import { dispatchCartUpdate } from "@/components/cart-actions";
+import { useCart } from "@/lib/cart-store";
 
 export function CartPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const cart: CartItem[] = useCart(); // ✅ Tipe ditambahkan
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setCart(getCartFromStorage());
     setMounted(true);
-    const update = () => setCart(getCartFromStorage());
-    window.addEventListener("revo-cart-updated", update);
-    return () => window.removeEventListener("revo-cart-updated", update);
   }, []);
 
   const updateQty = (id: number, delta: number) => {
-    const next = cart.map((item) =>
+    const current = getCartFromStorage();
+    const next = current.map((item) =>
       item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item
     );
-    setCart(next);
     saveCartToStorage(next);
     dispatchCartUpdate();
   };
 
   const removeItem = (id: number) => {
-    const next = cart.filter((x) => x.id !== id);
-    setCart(next);
+    const current = getCartFromStorage();
+    const next = current.filter((x) => x.id !== id);
     saveCartToStorage(next);
     dispatchCartUpdate();
   };
 
   const clearCart = () => {
-    setCart([]);
     saveCartToStorage([]);
     dispatchCartUpdate();
   };
@@ -50,8 +46,8 @@ export function CartPage() {
     return <div className="container-page py-20 text-center text-[var(--black)]">Loading cart...</div>;
   }
 
-  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const shipping = subtotal >= 50 ? 0 : 5; // Free shipping over $50, $5 shipping cost
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0); // ✅ TypeScript sekarang tahu s: number, i: CartItem
+  const shipping = subtotal >= 50 ? 0 : 5;
   const total = subtotal + shipping;
 
   return (
