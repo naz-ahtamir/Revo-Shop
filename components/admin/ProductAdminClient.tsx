@@ -61,8 +61,11 @@ export function ProductAdminClient({ initialProducts }: ProductAdminClientProps)
   const [prevImagePreview, setPrevImagePreview] = useState<string | null>(null);
 
   const { data: products, error, isLoading } = useSWR<Product[]>("/api/admin/products", fetcher, {
-    fallbackData: initialProducts,
-    revalidateOnFocus: false,
+    fallbackData: initialProducts,  // Hydrate with SSR data
+    revalidateOnFocus: true,         // Auto-refresh on tab focus
+    revalidateOnReconnect: true,     // Auto-refresh on reconnect
+    refreshInterval: 30000,          // Auto-refresh every 30s
+    dedupingInterval: 5000,          // Dedupe requests within 5s
   });
 
   useEffect(() => {

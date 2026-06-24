@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import useSWR from "swr";
 import { ProductCard } from "@/components/ProductCard";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import type { ApiProduct } from "@/lib/types";
@@ -10,12 +11,25 @@ interface ProductsListingProps {
   initialProducts?: ApiProduct[];
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export function ProductsListing({ initialProducts = [] }: ProductsListingProps) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") ?? "";
   const initialSearch = searchParams.get("q") ?? "";
 
-  const [products] = useState<ApiProduct[]>(initialProducts);
+  // useSWR with hydration from server-rendered initialProducts
+  const { data: products = initialProducts } = useSWR<ApiProduct[]>(
+    "/api/products",
+    fetcher,
+    {
+      fallbackData: initialProducts, // Hydrate with SSR data
+      revalidateOnFocus: true,        // Auto-refresh on tab focus
+      revalidateOnReconnect: true,    // Auto-refresh on reconnect
+      dedupingInterval: 10000,        // Dedupe requests within 10s
+    }
+  );
+
   const [search, setSearch] = useState(initialSearch);
   const [sort, setSort] = useState("default");
   const [priceMin, setPriceMin] = useState("");

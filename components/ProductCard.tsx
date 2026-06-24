@@ -38,8 +38,8 @@ export const ProductCard = memo(function ProductCard({ product }: ProductCardPro
   const imageUrl = getImageUrl(product.images);
 
   return (
-    <div className="group rounded-2xl border border-[var(--gray-200)] bg-white p-5 transition-all hover:border-[var(--orange)] hover:shadow-lg">
-      <Link href={`/products/${product.slug}`}>
+    <div className="group flex h-full flex-col rounded-2xl border border-[var(--gray-200)] bg-white p-5 transition-all hover:border-[var(--orange)] hover:shadow-lg">
+      <Link href={`/products/${product.slug}`} className="flex flex-1 flex-col">
         <div className="relative aspect-square overflow-hidden rounded-xl bg-[var(--gray-50)]">
           {imageUrl ? (
             <Image
@@ -54,14 +54,14 @@ export const ProductCard = memo(function ProductCard({ product }: ProductCardPro
             </div>
           )}
         </div>
-        <div className="mt-5">
+        <div className="mt-5 flex flex-1 flex-col">
           <span className="text-xs font-semibold uppercase tracking-wider text-[var(--orange)]">
             {product.category.name}
           </span>
           <h3 className="mt-1.5 line-clamp-2 font-semibold text-[var(--black)]">
             {product.title}
           </h3>
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex flex-1 items-end justify-between">
             <div className="font-[family-name:var(--font-montserrat)] text-xl font-bold text-[var(--black)]">
               {fmtUsd(product.price)}
             </div>
