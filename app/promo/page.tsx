@@ -40,28 +40,29 @@ export default function PromoPage() {
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {deals.map((d) => (
-          <div
-            key={d.label}
-            className="relative overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-white p-6"
-          >
-            <div className="absolute top-0 left-0 h-1 w-full bg-[var(--orange)]" />
-            <div className="font-[family-name:var(--font-montserrat)] text-4xl font-extrabold text-[var(--orange)]">
-              {d.pct}
-            </div>
-            <h3 className="mt-2 font-bold text-[var(--black)]">{d.label}</h3>
-            <p className="mt-2 text-sm text-[var(--black)]">{d.desc}</p>
-            <div className="mt-3 flex flex-wrap gap-1">
-              {d.products.map((p) => (
-                <span key={p} className="badge badge-gray">
-                  {p}
-                </span>
-              ))}
-            </div>
-            <p className="mt-4 text-xs text-[var(--black)]">Valid until: {d.expires}</p>
-            <Link href="/products" className="btn btn-outline btn-sm mt-4 inline-flex">
-              Shop Now →
-            </Link>
+        <div
+          key={d.label}
+          className="relative flex h-full flex-col items-center overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-white p-6 text-center"
+        >
+          <div className="absolute top-0 left-0 h-1 w-full bg-[var(--orange)]" />
+          <div className="font-[family-name:var(--font-montserrat)] text-4xl font-extrabold text-[var(--orange)]">
+            {d.pct}
           </div>
+          <h3 className="mt-2 font-bold text-[var(--black)]">{d.label}</h3>
+          <p className="mt-2 text-sm text-[var(--black)]">{d.desc}</p>
+          <div className="mt-3 flex flex-wrap justify-center gap-1">
+            {d.products.map((p) => (
+              <span key={p} className="badge badge-gray">
+                {p}
+              </span>
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-[var(--black)]">Valid until: {d.expires}</p>
+          <div className="flex-1" />
+          <Link href="/products" className="btn btn-outline btn-sm mt-8 inline-flex w-fit">
+            Shop Now
+          </Link>
+        </div>
         ))}
       </div>
       <section className="mt-16">
