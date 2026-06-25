@@ -32,30 +32,42 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  let body;
   try {
-    const body = await req.json();
-    const { customer, product, qty, total } = body;
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+  }
 
-    if (!customer || !product || !qty || !total) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  try {
+    // Extract order data from checkout payload
+    const { customerId, items, shippingAddress, subtotal, shipping, tax, total } = body;
+
+    if (!customerId || !items || items.length === 0 || !shippingAddress) {
+      return NextResponse.json(
+        { error: "Missing required fields: customerId, items, and shippingAddress are required" },
+        { status: 400 }
+      );
     }
 
-    const orders = getOrders();
+    // Create order object
     const newOrder: Order = {
       id: `ORD-${Date.now()}`,
-      customer,
-      product,
-      qty: Number(qty),
+      customer: customerId,
+      product: items.map((i: any) => i.name).join(", "), // Concatenate item names
+      qty: items.reduce((sum: number, item: any) => sum + item.qty, 0),
       total: Number(total),
       status: "Pending",
       date: new Date().toISOString(),
     };
 
+    const orders = getOrders();
     orders.push(newOrder);
     saveOrders(orders);
 
     return NextResponse.json(newOrder, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("Order creation error:", error);
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
   }
 }
